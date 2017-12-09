@@ -12,7 +12,7 @@ NBArosters <- NBArosters %>% mutate(
   meters = inches*0.025,
   BMI = kg/(meters*meters)
 )
-allTeams <- unique(NBArosters$`#Team Abbr.`)
+allTeams <- c("All",unique(NBArosters$`#Team Abbr.`))
 
 #############################
 
@@ -31,11 +31,14 @@ ui <- fluidPage(
  )
 )
 
+
 #############################
 
 server <- function(input, output) {
   output$value <- renderPlot({
-    ggplot(data = filter(NBArosters, `#Team Abbr.` == input$select),aes(`#Height`,`#Weight`,color=`#Position`)) + geom_point()
+    ggplot(data = if(input$select!="All") {filter(NBArosters, `#Team Abbr.` == input$select)}
+           else {NBArosters},
+           aes(meters,`#Weight`,color=`#Position`)) + geom_point()
     #input$select is your variable for picking team name 
     })
 }
